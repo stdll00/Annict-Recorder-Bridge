@@ -1,4 +1,5 @@
 import unicodedata
+from datetime import datetime
 from typing import Dict
 
 from app.models.common_models import RecordRequest
@@ -14,13 +15,32 @@ class EpgStation(RecorderABC):
         url = f"{self.config['endpoint']}/api/schedule?type=GR"
         self.channels = list(
             map(lambda x: x['channel'], requests.get(url, stream=True).json()), )
+        self.reserves = None
 
     def convert_channel(self, channel_name: str):
         scores = [SequenceMatcher(None, channel_name, unicodedata.normalize("NFKD", d['name'])).ratio()
+                  # TOKYO MX1  などに対応するため1を優先
                   + unicodedata.normalize("NFKD", d['name']).count('1') * 0.01 for d in self.channels]
         return self.channels[scores.index(max(scores))]['id']
 
+    def check_reserved(self, start: datetime, channel: str):
+        if not self.reserves:
+            url = f"{self.config['endpoint']}/api/reserves?limit=10000&offset=0"
+            self.reserves = requests.get(url).json()["reserves"]
+
+        if any(filter(
+                lambda r: r["program"]["startAt"] == start.timestamp() * 1000 and r["program"][
+                    "channelId"] == self.convert_channel(
+                    channel),
+                self.reserves
+        )):
+            return True
+        return False
+
     def record_request(self, record_request: RecordRequest) -> bool:
+        if self.check_reserved(record_request.start_at, record_request.channel):
+            print("already reserved")
+            return False
         data = {
             "option": {},
             "encode": {
@@ -39,4 +59,7 @@ class EpgStation(RecorderABC):
             }
         }
         res = requests.post(f"{self.config['endpoint']}/api/reserves", json=data)
-        return res.status_code == 201
+        if res.status_code != 201:
+            print(res.json())
+            return False
+        return True
