@@ -18,7 +18,3 @@ class Annict:
             if obj.start_at.timestamp() < datetime.utcnow().timestamp():
                 continue
             yield obj
-
-
-if __name__ == '__main__':
-    print(list(Annict({"token": "7Vt5sEE2scAZeYm5H6y3e7NAQimeblGfpRS5T3r4v2g"}).get_record_target()))
