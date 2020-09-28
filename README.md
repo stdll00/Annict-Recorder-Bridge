@@ -1,6 +1,14 @@
 # Annict Recorder Bridge
 [Annict](https://annict.jp/) の放送予定を自動でEPGStationに送信します
 
+# Get Started
+AnnictユーザーかつEPGStationのみをサポート
+```
+pip3 install -r requierements.txt
+
+python3 app/main.py
+```
+cronなどで定期的に実行してください
 
 # TODO
 - [x] Annictからの取得
