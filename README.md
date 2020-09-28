@@ -1,2 +1,1 @@
-
-Annict -> Recorder connector
+# Annict Recorder Bridge
