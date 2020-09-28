@@ -1,5 +1,5 @@
 # Annict Recorder Bridge
-(Annict)[https://annict.jp/) の放送予定を自動で録画します
+[Annict](https://annict.jp/) の放送予定を自動でEPGStationに送信します
 
 
 # TODO
