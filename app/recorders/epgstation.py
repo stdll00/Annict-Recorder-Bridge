@@ -2,7 +2,7 @@ import unicodedata
 from datetime import datetime
 from typing import Dict
 
-from app.models.common_models import RecordRequest
+from app.models.common_models import RecordRequest, RecordStatus
 from app.recorders.abst_recorder import RecorderABC
 from difflib import SequenceMatcher
 import requests
@@ -37,10 +37,9 @@ class EpgStation(RecorderABC):
             return True
         return False
 
-    def record_request(self, record_request: RecordRequest) -> bool:
+    def record_request(self, record_request: RecordRequest) -> RecordStatus:
         if self.check_reserved(record_request.start_at, record_request.channel):
-            print("already reserved")
-            return False
+            return RecordStatus.DUPLICATED
         data = {
             "option": {},
             "encode": {
@@ -60,6 +59,8 @@ class EpgStation(RecorderABC):
         }
         res = requests.post(f"{self.config['endpoint']}/api/reserves", json=data)
         if res.status_code != 201:
-            print(res.json())
-            return False
-        return True
+            err = res.json()
+            if "errors" in err and err["erors"] == "ReservationManageModelAddReserveConflict":
+                return RecordStatus.CONFLICT
+            return RecordStatus.ERROR
+        return RecordStatus.RESERVED

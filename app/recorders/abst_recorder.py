@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict
 
-from app.models.common_models import RecordRequest
+from app.models.common_models import RecordRequest, RecordStatus
 
 
 class RecorderABC(ABC):
@@ -10,8 +10,8 @@ class RecorderABC(ABC):
         # TODO validator
 
     @abstractmethod
-    def record_request(self, record_request: RecordRequest) -> bool:
+    def record_request(self, record_request: RecordRequest) -> RecordStatus:
         """
         :return: True if success else False
         """
-        pass
+        raise NotImplementedError()

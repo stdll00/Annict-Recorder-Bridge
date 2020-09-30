@@ -7,7 +7,7 @@ from app.annict.query import QUERY_GET_PROGRAM, program_parse
 class Annict:
     def __init__(self, config: Dict):
         self.token = config['token']
-        self.endpoint = "https://api.annict.com/graphql"  # TODO fix
+        self.endpoint = "https://api.annict.com/graphql"
 
     def get_record_target(self):
         headers = {"Authorization": f"bearer {self.token}"}
