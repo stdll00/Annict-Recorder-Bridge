@@ -60,7 +60,7 @@ class EpgStation(RecorderABC):
         res = requests.post(f"{self.config['endpoint']}/api/reserves", json=data)
         if res.status_code != 201:
             err = res.json()
-            if "errors" in err and err["erors"] == "ReservationManageModelAddReserveConflict":
+            if "errors" in err and err["errors"] == "ReservationManageModelAddReserveConflict":
                 return RecordStatus.CONFLICT
             return RecordStatus.ERROR
         return RecordStatus.RESERVED
