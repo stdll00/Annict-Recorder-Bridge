@@ -15,8 +15,24 @@ env:
 
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run tests
+        run: |
+          if [ -f docker-compose.test.yml ]; then
+            docker-compose --file docker-compose.test.yml build
+            docker-compose --file docker-compose.test.yml run sut
+          else
+            docker build . --file Dockerfile
+          fi
+
   buildx:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       -
         name: Checkout
@@ -39,15 +55,13 @@ jobs:
       - name: Log into GitHub Container Registry
         run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: build
-        run: docker buildx build --platform=linux/arm64 --tag $IMAGE_NAME --platform linux/amd64,linux/arm64 .
-
-      - name: publish
+      - name: build and publish
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
-
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+
+
 
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
@@ -60,7 +74,5 @@ jobs:
 
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
-
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+          docker buildx build --platform=linux/arm64 --tag $IMAGE_ID:$VERSION --push  --platform linux/amd64,linux/arm64 .
 
