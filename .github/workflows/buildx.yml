@@ -74,5 +74,6 @@ jobs:
 
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
-          docker buildx build --platform=linux/arm64 --tag $IMAGE_ID:$VERSION --push  --platform linux/amd64,linux/arm64 .
+          docker buildx build --platform=linux/arm64 --tag $IMAGE_ID:$VERSION  --platform linux/amd64,linux/arm64 .
+          docker images
 
