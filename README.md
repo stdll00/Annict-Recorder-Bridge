@@ -15,11 +15,7 @@ Dockerバージョン
 ```
 run_with_docker.sh
 ```
-RaspberryPiでARMを使っている場合
-```
-ghcr.io/stdll00/annict-recorder-bridge:latest-aarch64
-```
-を使ってください
+
 ## NOTE
 EPG Stationで録画する場合にルールとannictに重複があっても問題ありません。
 録画ファイルが2個になりますがいい感じに処理されます
@@ -38,6 +34,6 @@ EPG Stationで録画する場合にルールとannictに重複があっても問
 
 (やる気がない)
 - [ ] Chinachuやその他の録画機器サポート
-- [ ] arm32bit support
+- [x] arm32bit support(未検証)
 - [ ] Annict以外のサポート
 - [ ] DBを持って諸々の管理
