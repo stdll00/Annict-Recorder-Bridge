@@ -81,13 +81,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         
-      - name: setup docker for arm
-        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      - name: check architecture
-        run: docker run --rm -t python:3.8.6-alpine uname -m 
-
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+      - name: setup docker for arm and build
+        run: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          docker run --rm -t python:3.8.6-alpine uname -m 
+          docker build . --file Dockerfile --tag $IMAGE_NAME
 
       - name: Log into GitHub Container Registry
         run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
